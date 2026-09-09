@@ -1,0 +1,4 @@
+@model Customer
+@{ ViewData["Title"] = "Thêm khách hàng"; }
+<div class="card form-card p-4"><h1 class="page-title h3">Thêm khách hàng</h1><form asp-action="Create" class="mt-3"><partial name="_Form" model="Model"/><div class="mt-4"><button class="btn btn-primary">Lưu</button><a class="btn btn-link" asp-action="Index">Quay lại</a></div></form></div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

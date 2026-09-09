@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] | Hệ thống Salon tích hợp AI</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark salon-nav shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">✦ SALON AI</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-label="Mở menu"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <ul class="navbar-nav me-auto small">
+                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Trang tổng quan</a></li>
+                        @if (User.IsInRole("Admin") || User.IsInRole("Receptionist"))
+                        {
+                            <li class="nav-item"><a class="nav-link" asp-controller="Customers" asp-action="Index">Khách hàng</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Appointments" asp-action="Index">Lịch hẹn</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Invoices" asp-action="Index">Hóa đơn</a></li>
+                        }
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item"><a class="nav-link" asp-controller="Stylists" asp-action="Index">Thợ làm tóc</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Services" asp-action="Index">Dịch vụ</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="StylistSchedules" asp-action="Index">Ca làm việc</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Reports" asp-action="Index">Báo cáo</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Users" asp-action="Index">Quản lý người dùng</a></li>
+                        }
+                        @if (User.IsInRole("Stylist"))
+                        {
+                            <li class="nav-item"><a class="nav-link" asp-controller="Appointments" asp-action="Index">Lịch của tôi</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="StylistSchedules" asp-action="Index">Ca làm việc</a></li>
+                        }
+                        <li class="nav-item"><a class="nav-link" asp-controller="AI" asp-action="Index">Trợ lý AI</a></li>
+                    </ul>
+                }
+                <partial name="_LoginPartial" />
+            </div>
+        </div>
+    </nav>
+    <main class="container py-4">
+        @if (TempData["Success"] is string success) { <div class="alert alert-success alert-dismissible fade show" role="alert">@success<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> }
+        @if (TempData["Error"] is string error) { <div class="alert alert-danger alert-dismissible fade show" role="alert">@error<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> }
+        @RenderBody()
+    </main>
+    <footer class="py-4 text-center text-muted small">© 2026 Hệ thống quản lý Salon tích hợp AI · Đồ án ASP.NET Core MVC</footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

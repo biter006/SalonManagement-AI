@@ -1,0 +1,2 @@
+@model StylistSchedule
+@{ ViewData["Title"]="Xóa ca làm"; }<div class="card form-card p-4"><h1 class="page-title h3">Xóa ca làm việc</h1><p>Bạn có chắc muốn xóa ca của <strong>@Model.Stylist?.FullName</strong> ngày @Model.WorkDate.ToString("dd/MM/yyyy")?</p><form asp-action="Delete"><input type="hidden" asp-for="Id"/><button class="btn btn-danger">Xóa</button><a class="btn btn-link" asp-action="Index">Hủy</a></form></div>

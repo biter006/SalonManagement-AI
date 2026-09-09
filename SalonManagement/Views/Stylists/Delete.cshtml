@@ -1,0 +1,2 @@
+@model Stylist
+@{ ViewData["Title"]="Xóa thợ"; }<div class="card form-card p-4"><h1 class="page-title h3">Xóa thợ</h1><p>Bạn có chắc muốn xóa <strong>@Model.FullName</strong>?</p><form asp-action="Delete"><input type="hidden" asp-for="Id"/><button class="btn btn-danger">Xóa</button><a class="btn btn-link" asp-action="Details" asp-route-id="@Model.Id">Hủy</a></form></div>

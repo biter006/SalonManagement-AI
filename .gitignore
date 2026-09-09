@@ -1,0 +1,17 @@
+# Build output and IDE files
+bin/
+obj/
+.vs/
+
+# Temporary document-generation folders (may contain locked files)
+.tmp_*/
+tmp_*/
+
+# Local-only configuration and secrets
+appsettings.Development.json
+.env
+!.env.example
+
+# User-specific files
+*.user
+*.suo

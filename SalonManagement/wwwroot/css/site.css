@@ -1,0 +1,14 @@
+:root { --salon: #3d2738; --rose: #b36f8d; --cream: #fbf8f4; }
+body { background: var(--cream); color: #352b32; }
+.salon-nav { background: linear-gradient(100deg, #321f30, #795066); }
+.salon-nav .nav-link { color: rgba(255,255,255,.82); }
+.salon-nav .nav-link:hover { color: #fff; }
+.card { border: 0; border-radius: 1rem; box-shadow: 0 .2rem 1rem rgba(50,31,48,.08); }
+.metric-card { background: #fff; border-left: 5px solid var(--rose); }
+.metric-number { font-size: 1.7rem; font-weight: 700; }
+.page-title { color: var(--salon); font-weight: 700; }
+.table { background: #fff; }
+.badge-status { font-size: .75rem; }
+.ai-result { white-space: pre-line; background: #fff7fa; border: 1px solid #ecd2dd; border-radius: .75rem; padding: 1rem; }
+.form-card { max-width: 780px; }
+footer { color: #806d77; }

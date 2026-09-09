@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1030" viewBox="0 0 1500 1030">
+<style>.t{font:700 24px Arial;fill:#15233b}.s{font:700 20px Arial;fill:#15233b}.l{font:16px Arial;fill:#18243a}.a{font:700 16px Arial;fill:#18243a}.ln{stroke:#71819a;stroke-width:2;fill:none}.o{stroke:#2d6fba;stroke-width:2.2;fill:#edf5ff}.common{stroke:#d48618;fill:#fff4df}.ad{stroke:#4b9b56;fill:#e8f5e9}.re{stroke:#9160b4;fill:#f4eafd}.note{font:italic 14px Arial;fill:#52637d}</style>
+<rect width="1500" height="1030" fill="white"/><text x="750" y="40" text-anchor="middle" class="t">SƠ ĐỒ USE CASE TỔNG QUAN HỆ THỐNG QUẢN LÝ SALON TÓC TÍCH HỢP AI</text><rect x="180" y="70" width="1140" height="880" rx="4" fill="#fbfcff" stroke="#263f61" stroke-width="2"/><text x="750" y="105" text-anchor="middle" class="s">HỆ THỐNG QUẢN LÝ SALON TÓC TÍCH HỢP AI</text>
+<!-- Associations are drawn first and therefore remain behind all ellipses. -->
+<!-- Admin --> <path class="ln" d="M140 315H220V160H390M140 315H235V160H850M140 315H250V290H370M140 315H265V410H370M140 315H280V530H370M140 315H295V650H370M140 315H310V770H370M140 315H325V875H370M140 315H205V925H890M140 315H225V720H890M140 315H240V600H890M140 315H255V480H890"/>
+<!-- Reception --> <path class="ln" d="M750 970V925H610M750 970V875H890M750 970V770H890M750 970V650H890M750 970V530H890M750 970V480H850M750 970V160H610M750 970V160H850"/>
+<!-- Stylist --> <path class="ln" d="M1360 530H1320V160H850M1360 530H1305V160H610M1360 530H1290V480H1130M1360 530H1275V650H1130"/>
+<!-- 12 use cases -->
+<ellipse class="o common" cx="500" cy="160" rx="150" ry="38"/><text class="l" x="500" y="154" text-anchor="middle">Đăng nhập, đăng xuất</text><text class="l" x="500" y="174" text-anchor="middle">và phân quyền</text>
+<ellipse class="o common" cx="1000" cy="160" rx="150" ry="38"/><text class="l" x="1000" y="154" text-anchor="middle">Quản lý tài khoản</text><text class="l" x="1000" y="174" text-anchor="middle">và đổi mật khẩu</text>
+<ellipse class="o ad" cx="500" cy="290" rx="150" ry="38"/><text class="l" x="500" y="296" text-anchor="middle">Quản lý người dùng và vai trò</text>
+<ellipse class="o re" cx="1000" cy="290" rx="150" ry="38"/><text class="l" x="1000" y="296" text-anchor="middle">Quản lý khách hàng</text>
+<ellipse class="o ad" cx="500" cy="410" rx="150" ry="38"/><text class="l" x="500" y="416" text-anchor="middle">Quản lý thợ làm tóc</text>
+<ellipse class="o ad" cx="500" cy="530" rx="150" ry="38"/><text class="l" x="500" y="536" text-anchor="middle">Quản lý dịch vụ salon</text>
+<ellipse class="o ad" cx="500" cy="650" rx="150" ry="38"/><text class="l" x="500" y="644" text-anchor="middle">Quản lý ca làm việc</text><text class="l" x="500" y="664" text-anchor="middle">của thợ</text>
+<ellipse class="o re" cx="1000" cy="480" rx="150" ry="38"/><text class="l" x="1000" y="474" text-anchor="middle">Quản lý lịch hẹn</text><text class="l" x="1000" y="494" text-anchor="middle">và kiểm tra trùng lịch</text>
+<ellipse class="o re" cx="1000" cy="600" rx="150" ry="38"/><text class="l" x="1000" y="594" text-anchor="middle">Quản lý hóa đơn</text><text class="l" x="1000" y="614" text-anchor="middle">và thanh toán</text>
+<ellipse class="o ad" cx="500" cy="770" rx="150" ry="38"/><text class="l" x="500" y="776" text-anchor="middle">Dashboard tổng quan</text>
+<ellipse class="o ad" cx="500" cy="875" rx="150" ry="38"/><text class="l" x="500" y="869" text-anchor="middle">Báo cáo doanh thu, dịch vụ</text><text class="l" x="500" y="889" text-anchor="middle">phổ biến, khách quay lại</text>
+<ellipse class="o re" cx="1000" cy="720" rx="150" ry="38"/><text class="l" x="1000" y="714" text-anchor="middle">AI gợi ý dịch vụ, sinh tin nhắn</text><text class="l" x="1000" y="734" text-anchor="middle">và tóm tắt lịch sử khách</text>
+<!-- Actors -->
+<g stroke="#16243b" stroke-width="2.8" fill="none"><circle cx="100" cy="275" r="15"/><path d="M100 290V340M72 311H128M100 340L75 377M100 340L125 377"/></g><text x="100" y="405" text-anchor="middle" class="a">QUẢN TRỊ VIÊN</text>
+<g stroke="#16243b" stroke-width="2.8" fill="none"><circle cx="750" cy="935" r="15"/><path d="M750 950V1000M722 972H778M750 1000L725 1025M750 1000L775 1025"/></g><text x="750" y="1018" text-anchor="middle" class="a">LỄ TÂN</text>
+<g stroke="#16243b" stroke-width="2.8" fill="none"><circle cx="1400" cy="490" r="15"/><path d="M1400 505V555M1372 526H1428M1400 555L1375 592M1400 555L1425 592"/></g><text x="1400" y="620" text-anchor="middle" class="a">THỢ LÀM TÓC</text>
+<text x="750" y="930" text-anchor="middle" class="note">Các đường liên kết được vẽ sau vùng trống và đặt phía sau Use Case.</text>
+</svg>

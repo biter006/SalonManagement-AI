@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1060" viewBox="0 0 1400 1060">
+<style>
+ .title{font:700 24px Arial,sans-serif;fill:#111}.system{font:700 19px Arial,sans-serif;fill:#111}.text{font:16px Arial,sans-serif;fill:#111}.actor{font:700 16px Arial,sans-serif;fill:#111}.line{fill:none;stroke:#111;stroke-width:1.8}.oval{fill:#fff;stroke:#111;stroke-width:2}
+</style>
+<rect width="1400" height="1060" fill="#fff"/>
+<text x="700" y="38" text-anchor="middle" class="title">SƠ ĐỒ USE CASE TỔNG QUAN HỆ THỐNG QUẢN LÝ SALON TÓC TÍCH HỢP AI</text>
+<rect x="215" y="70" width="970" height="925" fill="#fff" stroke="#111" stroke-width="2"/>
+<text x="700" y="104" text-anchor="middle" class="system">HỆ THỐNG QUẢN LÝ SALON TÓC TÍCH HỢP AI</text>
+
+<!-- All paths are put behind the ovals, thus they cannot cover any use-case text. -->
+<!-- ADMIN: left-side independent lanes -->
+<path class="line" d="M120 260H175V180H325"/>
+<path class="line" d="M120 260H160V330H325"/>
+<path class="line" d="M120 260H145V480H325"/>
+<path class="line" d="M120 260H130V630H325"/>
+<path class="line" d="M120 260H115V780H325"/>
+<path class="line" d="M120 260H100V930H325"/>
+<path class="line" d="M120 260H190V135H805"/>
+<path class="line" d="M120 260H205V135H805"/>
+
+<!-- RECEPTIONIST: horizontal lanes are routed in gaps between rows -->
+<path class="line" d="M120 580H245V330H805"/>
+<path class="line" d="M120 580H260V630H805"/>
+<path class="line" d="M120 580H275V780H325"/>
+<path class="line" d="M120 580H290V930H805"/>
+<path class="line" d="M120 580H305V135H325"/>
+<path class="line" d="M120 580H320V135H805"/>
+
+<!-- STYLIST: right-side independent lanes -->
+<path class="line" d="M1280 560H1220V180H1075"/>
+<path class="line" d="M1280 560H1235V630H1075"/>
+<path class="line" d="M1280 560H1250V780H1075"/>
+<path class="line" d="M1280 560H1265V930H1075"/>
+
+<!-- Use cases: fixed two-column layout -->
+<ellipse class="oval" cx="445" cy="180" rx="120" ry="38"/><text x="445" y="174" text-anchor="middle" class="text">UC01. Đăng nhập, đăng xuất</text><text x="445" y="194" text-anchor="middle" class="text">và phân quyền</text>
+<ellipse class="oval" cx="925" cy="180" rx="120" ry="38"/><text x="925" y="174" text-anchor="middle" class="text">UC02. Quản lý tài khoản</text><text x="925" y="194" text-anchor="middle" class="text">và đổi mật khẩu</text>
+
+<ellipse class="oval" cx="445" cy="330" rx="120" ry="38"/><text x="445" y="324" text-anchor="middle" class="text">UC03. Quản lý người dùng</text><text x="445" y="344" text-anchor="middle" class="text">và vai trò</text>
+<ellipse class="oval" cx="925" cy="330" rx="120" ry="38"/><text x="925" y="336" text-anchor="middle" class="text">UC04. Quản lý khách hàng</text>
+
+<ellipse class="oval" cx="445" cy="480" rx="120" ry="38"/><text x="445" y="486" text-anchor="middle" class="text">UC05. Quản lý thợ làm tóc</text>
+<ellipse class="oval" cx="925" cy="480" rx="120" ry="38"/><text x="925" y="486" text-anchor="middle" class="text">UC06. Quản lý dịch vụ salon</text>
+
+<ellipse class="oval" cx="445" cy="630" rx="120" ry="38"/><text x="445" y="624" text-anchor="middle" class="text">UC07. Quản lý ca làm việc</text><text x="445" y="644" text-anchor="middle" class="text">của thợ</text>
+<ellipse class="oval" cx="925" cy="630" rx="120" ry="38"/><text x="925" y="624" text-anchor="middle" class="text">UC08. Quản lý lịch hẹn</text><text x="925" y="644" text-anchor="middle" class="text">và kiểm tra trùng lịch</text>
+
+<ellipse class="oval" cx="445" cy="780" rx="120" ry="38"/><text x="445" y="774" text-anchor="middle" class="text">UC09. Quản lý hóa đơn</text><text x="445" y="794" text-anchor="middle" class="text">và thanh toán</text>
+<ellipse class="oval" cx="925" cy="780" rx="120" ry="38"/><text x="925" y="786" text-anchor="middle" class="text">UC10. Dashboard tổng quan</text>
+
+<ellipse class="oval" cx="445" cy="930" rx="120" ry="38"/><text x="445" y="924" text-anchor="middle" class="text">UC11. Báo cáo doanh thu, dịch vụ</text><text x="445" y="944" text-anchor="middle" class="text">phổ biến, khách quay lại</text>
+<ellipse class="oval" cx="925" cy="930" rx="120" ry="38"/><text x="925" y="924" text-anchor="middle" class="text">UC12. AI gợi ý dịch vụ, sinh tin nhắn</text><text x="925" y="944" text-anchor="middle" class="text">và tóm tắt lịch sử khách</text>
+
+<!-- actors -->
+<g stroke="#111" stroke-width="2.4" fill="none"><circle cx="90" cy="220" r="14"/><path d="M90 234V282M64 252H116M90 282L65 319M90 282L115 319"/></g><text x="90" y="348" text-anchor="middle" class="actor">QUẢN TRỊ VIÊN</text>
+<g stroke="#111" stroke-width="2.4" fill="none"><circle cx="90" cy="540" r="14"/><path d="M90 554V602M64 572H116M90 602L65 639M90 602L115 639"/></g><text x="90" y="668" text-anchor="middle" class="actor">LỄ TÂN</text>
+<g stroke="#111" stroke-width="2.4" fill="none"><circle cx="1310" cy="520" r="14"/><path d="M1310 534V582M1284 552H1336M1310 582L1285 619M1310 582L1335 619"/></g><text x="1310" y="648" text-anchor="middle" class="actor">THỢ LÀM TÓC</text>
+</svg>

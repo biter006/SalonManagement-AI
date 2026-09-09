@@ -1,0 +1,2 @@
+@model PaymentViewModel
+@{ ViewData["Title"]="Thanh toán"; }<div class="card form-card p-4"><h1 class="page-title h3">Ghi nhận thanh toán</h1><form asp-action="Payment"><input type="hidden" asp-for="InvoiceId"/><div class="mb-3"><label asp-for="PaymentMethod" class="form-label"></label><select asp-for="PaymentMethod" asp-items="Html.GetEnumSelectList<PaymentMethod>()" class="form-select"></select></div><button class="btn btn-success">Xác nhận đã thanh toán</button><a class="btn btn-link" asp-action="Details" asp-route-id="@Model.InvoiceId">Hủy</a></form></div>

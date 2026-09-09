@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="930" viewBox="0 0 1400 930">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L10,3 L0,6 Z" fill="#355070"/></marker>
+    <style>
+      .title{font:700 27px Arial,sans-serif;fill:#1f2a44}.sub{font:700 18px Arial,sans-serif;fill:#1f2a44}.txt{font:16px Arial,sans-serif;fill:#172033}.small{font:14px Arial,sans-serif;fill:#34435e}.box{stroke:#355070;stroke-width:2;rx:14;ry:14}.line{stroke:#355070;stroke-width:2.2;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1400" height="930" fill="#ffffff"/>
+  <text x="700" y="45" text-anchor="middle" class="title">MÔ HÌNH KIẾN TRÚC TỔNG QUÁT HỆ THỐNG QUẢN LÝ SALON TÓC TÍCH HỢP AI</text>
+
+  <rect x="535" y="75" width="330" height="90" class="box" fill="#fff1d6"/>
+  <text x="700" y="110" text-anchor="middle" class="sub">NGƯỜI DÙNG</text>
+  <text x="700" y="140" text-anchor="middle" class="txt">Quản trị viên · Lễ tân · Thợ làm tóc</text>
+
+  <rect x="430" y="235" width="540" height="105" class="box" fill="#e9f2ff"/>
+  <text x="700" y="275" text-anchor="middle" class="sub">GIAO DIỆN WEB (FRONTEND)</text>
+  <text x="700" y="305" text-anchor="middle" class="txt">Razor Views · HTML · CSS · Bootstrap · JavaScript</text>
+
+  <rect x="350" y="410" width="700" height="240" class="box" fill="#eef8ef"/>
+  <text x="700" y="448" text-anchor="middle" class="sub">BACKEND – ASP.NET CORE MVC</text>
+  <rect x="390" y="480" width="270" height="120" class="box" fill="#dcefdc"/>
+  <text x="525" y="518" text-anchor="middle" class="sub">CONTROLLERS</text>
+  <text x="525" y="548" text-anchor="middle" class="small">Tiếp nhận yêu cầu</text>
+  <text x="525" y="572" text-anchor="middle" class="small">Kiểm tra quyền, điều hướng</text>
+  <rect x="740" y="480" width="270" height="120" class="box" fill="#dcefdc"/>
+  <text x="875" y="518" text-anchor="middle" class="sub">SERVICES</text>
+  <text x="875" y="548" text-anchor="middle" class="small">Xử lý nghiệp vụ, kiểm tra</text>
+  <text x="875" y="572" text-anchor="middle" class="small">trùng lịch, báo cáo, AI</text>
+
+  <rect x="65" y="470" width="220" height="140" class="box" fill="#f3eaff"/>
+  <text x="175" y="510" text-anchor="middle" class="sub">IDENTITY</text>
+  <text x="175" y="540" text-anchor="middle" class="small">Đăng nhập</text>
+  <text x="175" y="563" text-anchor="middle" class="small">Xác thực</text>
+  <text x="175" y="586" text-anchor="middle" class="small">Phân quyền vai trò</text>
+
+  <rect x="1100" y="470" width="235" height="140" class="box" fill="#fff0f2"/>
+  <text x="1218" y="510" text-anchor="middle" class="sub">AI SERVICE</text>
+  <text x="1218" y="540" text-anchor="middle" class="small">Gợi ý dịch vụ</text>
+  <text x="1218" y="563" text-anchor="middle" class="small">Sinh tin nhắn</text>
+  <text x="1218" y="586" text-anchor="middle" class="small">Tóm tắt lịch sử</text>
+
+  <rect x="475" y="735" width="450" height="120" class="box" fill="#e7f3f7"/>
+  <text x="700" y="775" text-anchor="middle" class="sub">DATABASE – SQL SERVER</text>
+  <text x="700" y="805" text-anchor="middle" class="small">Entity Framework Core · Khách hàng · Thợ · Dịch vụ</text>
+  <text x="700" y="830" text-anchor="middle" class="small">Lịch hẹn · Hóa đơn · Lịch sử · Dữ liệu AI</text>
+
+  <rect x="1085" y="735" width="250" height="120" class="box" fill="#fff7db"/>
+  <text x="1210" y="775" text-anchor="middle" class="sub">AI PROVIDER</text>
+  <text x="1210" y="805" text-anchor="middle" class="small">OpenAI-compatible API</text>
+  <text x="1210" y="830" text-anchor="middle" class="small">hoặc Local Fallback</text>
+
+  <path d="M700 165 L700 235" class="line"/>
+  <path d="M700 340 L700 410" class="line"/>
+  <path d="M285 540 L390 540" class="line"/>
+  <path d="M660 540 L740 540" class="line"/>
+  <path d="M875 600 L760 735" class="line"/>
+  <path d="M525 600 L640 735" class="line"/>
+  <path d="M1050 530 L1100 530" class="line"/>
+  <path d="M1218 610 L1210 735" class="line"/>
+  <path d="M1100 575 C1005 660,925 705,840 735" class="line"/>
+  <text x="1000" y="680" class="small">Dữ liệu được phép</text>
+  <text x="1045" y="706" class="small">(khách, dịch vụ, lịch sử)</text>
+  <text x="1085" y="450" class="small">Gọi AI</text>
+  <text x="950" y="515" class="small">Kết quả AI</text>
+  <text x="282" y="450" class="small">Xác thực / quyền</text>
+  <text x="735" y="390" class="small">Yêu cầu HTTP</text>
+</svg>

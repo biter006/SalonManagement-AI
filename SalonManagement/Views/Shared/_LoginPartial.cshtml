@@ -1,0 +1,13 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+<ul class="navbar-nav small">
+@if (SignInManager.IsSignedIn(User))
+{
+    <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="Index">Tài khoản của tôi</a></li>
+    <li class="nav-item"><form asp-controller="Account" asp-action="Logout"><button type="submit" class="btn btn-link nav-link">Đăng xuất</button></form></li>
+}
+else
+{
+    <li class="nav-item"><a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Đăng nhập</a></li>
+}
+</ul>

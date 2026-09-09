@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1120" viewBox="0 0 1800 1120">
+  <style>
+    .title{font:700 25px Arial,sans-serif;fill:#15233b}.head{font:700 16px Arial,sans-serif;fill:#fff}.field{font:14px Arial,sans-serif;fill:#172033}.rel{fill:none;stroke:#718ba6;stroke-width:2.1}.card{fill:#fff;stroke:#718ba6;stroke-width:2}.identity{fill:#32699c}.master{fill:#4f833d}.transaction{fill:#c7832b}.ai{fill:#8064a2}.mark{font:700 13px Arial,sans-serif;fill:#354c66}
+  </style>
+  <rect width="1800" height="1120" fill="#fff"/>
+  <text x="900" y="38" text-anchor="middle" class="title">SƠ ĐỒ QUAN HỆ THỰC THỂ (ERD) HỆ THỐNG QUẢN LÝ SALON TÓC TÍCH HỢP AI</text>
+
+  <!-- Every relationship is placed first. Cards are later, so no line can overlay a table. -->
+  <!-- Identity -->
+  <path class="rel" d="M340 142 C380 142 400 142 440 142"/>
+  <path class="rel" d="M660 142 C700 142 720 142 760 142"/>
+  <!-- Appointment core -->
+  <path class="rel" d="M330 395 C410 395 490 395 570 395"/>
+  <path class="rel" d="M870 350 C960 300 1040 300 1130 300"/>
+  <path class="rel" d="M1400 300 C1440 300 1460 300 1500 300"/>
+  <path class="rel" d="M870 440 C960 500 1040 555 1130 555"/>
+  <!-- Invoice relations -->
+  <path class="rel" d="M720 500 C710 550 680 590 665 630"/>
+  <path class="rel" d="M330 460 C410 550 470 645 530 700"/>
+  <!-- Service history relations: each ends at a different part of ServiceHistories -->
+  <path class="rel" d="M190 490 C180 650 360 875 960 820"/>
+  <path class="rel" d="M870 480 C920 570 930 650 960 770"/>
+  <path class="rel" d="M1400 300 C1460 450 1450 690 1230 720"/>
+  <path class="rel" d="M1265 635 C1240 675 1210 700 1170 720"/>
+  <!-- AI relations -->
+  <path class="rel" d="M200 490 C180 650 200 820 235 960"/>
+  <path class="rel" d="M300 490 C340 700 440 875 750 960"/>
+  <path class="rel" d="M800 500 C900 650 900 800 830 960"/>
+
+  <!-- Identity tables -->
+  <g transform="translate(80,80)"><rect class="card" width="260" height="125"/><rect class="identity" width="260" height="35"/><text class="head" x="130" y="23" text-anchor="middle">AspNetUsers</text><text class="field" x="14" y="60">PK  Id</text><text class="field" x="14" y="82">UserName, Email</text><text class="field" x="14" y="104">PasswordHash</text></g>
+  <g transform="translate(440,80)"><rect class="card" width="220" height="125"/><rect class="identity" width="220" height="35"/><text class="head" x="110" y="23" text-anchor="middle">AspNetUserRoles</text><text class="field" x="14" y="60">PK, FK  UserId</text><text class="field" x="14" y="82">PK, FK  RoleId</text></g>
+  <g transform="translate(760,80)"><rect class="card" width="220" height="125"/><rect class="identity" width="220" height="35"/><text class="head" x="110" y="23" text-anchor="middle">AspNetRoles</text><text class="field" x="14" y="60">PK  Id</text><text class="field" x="14" y="82">Name</text></g>
+
+  <!-- Main business tables -->
+  <g transform="translate(60,300)"><rect class="card" width="270" height="190"/><rect class="master" width="270" height="35"/><text class="head" x="135" y="23" text-anchor="middle">Customers</text><text class="field" x="14" y="60">PK  Id</text><text class="field" x="14" y="82">FullName, Phone (Unique)</text><text class="field" x="14" y="104">Email, Gender</text><text class="field" x="14" y="126">Notes, CreatedAt</text></g>
+  <g transform="translate(570,300)"><rect class="card" width="300" height="200"/><rect class="transaction" width="300" height="35"/><text class="head" x="150" y="23" text-anchor="middle">Appointments</text><text class="field" x="14" y="60">PK  Id</text><text class="field" x="14" y="82">FK  CustomerId, StylistId</text><text class="field" x="14" y="104">FK  ServiceId</text><text class="field" x="14" y="126">AppointmentDate</text><text class="field" x="14" y="148">StartTime, EndTime, Status</text><text class="field" x="14" y="170">CustomerNote, CreatedAt</text></g>
+  <g transform="translate(1130,230)"><rect class="card" width="270" height="145"/><rect class="master" width="270" height="35"/><text class="head" x="135" y="23" text-anchor="middle">Stylists</text><text class="field" x="14" y="60">PK  Id</text><text class="field" x="14" y="82">FullName, Phone, Email</text><text class="field" x="14" y="104">Specialization, Experience</text><text class="field" x="14" y="126">Status</text></g>
+  <g transform="translate(1500,230)"><rect class="card" width="250" height="145"/><rect class="master" width="250" height="35"/><text class="head" x="125" y="23" text-anchor="middle">StylistSchedules</text><text class="field" x="14" y="60">PK  Id</text><text class="field" x="14" y="82">FK  StylistId</text><text class="field" x="14" y="104">WorkDate</text><text class="field" x="14" y="126">StartTime, EndTime</text></g>
+  <g transform="translate(1130,490)"><rect class="card" width="270" height="145"/><rect class="master" width="270" height="35"/><text class="head" x="135" y="23" text-anchor="middle">SalonServices</text><text class="field" x="14" y="60">PK  Id</text><text class="field" x="14" y="82">Name (Unique), Description</text><text class="field" x="14" y="104">Price, DurationMinutes</text><text class="field" x="14" y="126">Status</text></g>
+  <g transform="translate(530,630)"><rect class="card" width="270" height="145"/><rect class="transaction" width="270" height="35"/><text class="head" x="135" y="23" text-anchor="middle">Invoices</text><text class="field" x="14" y="60">PK  Id</text><text class="field" x="14" y="82">FK  AppointmentId (Unique)</text><text class="field" x="14" y="104">FK  CustomerId</text><text class="field" x="14" y="126">TotalAmount, PaymentMethod</text></g>
+  <g transform="translate(960,720)"><rect class="card" width="390" height="155"/><rect class="transaction" width="390" height="35"/><text class="head" x="195" y="23" text-anchor="middle">ServiceHistories</text><text class="field" x="14" y="60">PK  Id</text><text class="field" x="14" y="82">FK  CustomerId, AppointmentId</text><text class="field" x="14" y="104">FK  ServiceId, StylistId</text><text class="field" x="14" y="126">ServiceDate, Notes</text><text class="field" x="14" y="148">ResultDescription</text></g>
+
+  <!-- AI tables at the bottom; no table overlaps another. -->
+  <g transform="translate(100,960)"><rect class="card" width="270" height="120"/><rect class="ai" width="270" height="35"/><text class="head" x="135" y="23" text-anchor="middle">AIRecommendations</text><text class="field" x="14" y="60">PK Id, FK CustomerId</text><text class="field" x="14" y="82">InputText, Recommendation</text><text class="field" x="14" y="104">CreatedAt</text></g>
+  <g transform="translate(650,960)"><rect class="card" width="340" height="120"/><rect class="ai" width="340" height="35"/><text class="head" x="170" y="23" text-anchor="middle">AIGeneratedMessages</text><text class="field" x="14" y="60">PK Id, FK CustomerId</text><text class="field" x="14" y="82">FK AppointmentId (Nullable)</text><text class="field" x="14" y="104">MessageType, GeneratedMessage</text></g>
+
+  <!-- Cardinality labels -->
+  <text class="mark" x="350" y="388">1</text><text class="mark" x="545" y="388">N</text><text class="mark" x="885" y="343">N</text><text class="mark" x="1105" y="293">1</text><text class="mark" x="885" y="443">N</text><text class="mark" x="1105" y="548">1</text><text class="mark" x="1415" y="293">1</text><text class="mark" x="1480" y="293">N</text>
+</svg>
