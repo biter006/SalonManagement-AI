@@ -10,4 +10,4 @@ public interface IAIService
     Task<AITextResult> SummarizeHistoryAsync(Customer customer, IReadOnlyCollection<ServiceHistory> history, CancellationToken cancellationToken = default);
 }
 
-public record AITextResult(bool Succeeded, string Text, string? Error = null);
+public record AITextResult(bool Succeeded, string Text, string? Error = null, bool UsedFallback = false);

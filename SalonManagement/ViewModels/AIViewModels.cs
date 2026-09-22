@@ -26,6 +26,7 @@ public class AIRecommendationViewModel
     [Required(ErrorMessage = "Vui lòng chọn mức độ chăm sóc tại nhà.")]
     public string MaintenancePreference { get; set; } = string.Empty;
     public string? Result { get; set; }
+    public bool UsedFallback { get; set; }
     public IReadOnlyList<AIServiceSuggestionViewModel> SuggestedServices { get; set; } = Array.Empty<AIServiceSuggestionViewModel>();
     public IEnumerable<SelectListItem> Customers { get; set; } = Enumerable.Empty<SelectListItem>();
 }
@@ -51,7 +52,7 @@ public class AIChatViewModel
     public IEnumerable<SelectListItem> Customers { get; set; } = Enumerable.Empty<SelectListItem>();
 }
 
-public sealed record AIChatTurnViewModel(string Role, string Text);
+public sealed record AIChatTurnViewModel(string Role, string Text, bool UsedFallback = false);
 
 public class AIMessageViewModel
 {

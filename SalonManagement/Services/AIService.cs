@@ -36,7 +36,7 @@ public class AIService : IAIService
         var primary = suggestions.First();
         var lines = suggestions.Select((x, index) =>
             $"{index + 1}. {x.Service.Name} — {x.Service.Price:N0}đ / {x.Service.DurationMinutes} phút. Lý do: {x.Reason}.");
-        return new AITextResult(true, $"Dịch vụ đề xuất: {primary.Service.Name}.\n{string.Join("\n", lines)}\n\nLưu ý: Xác nhận tình trạng tóc thực tế và mong muốn của khách với thợ trước khi thực hiện.");
+        return new AITextResult(true, $"Dịch vụ đề xuất: {primary.Service.Name}.\n{string.Join("\n", lines)}\n\nLưu ý: Xác nhận tình trạng tóc thực tế và mong muốn của khách với thợ trước khi thực hiện.", UsedFallback: true);
     }
 
     public async Task<AITextResult> ChatAsync(Customer customer, IReadOnlyCollection<ServiceHistory> history,
@@ -61,7 +61,7 @@ public class AIService : IAIService
         var other = suggestions.Skip(1).Select(x => x.Service.Name).ToList();
         var alternative = other.Count == 0 ? string.Empty : $" Bạn cũng có thể cân nhắc: {string.Join(", ", other)}.";
         return new AITextResult(true,
-            $"Dựa trên câu hỏi của {customer.FullName}, bạn có thể tham khảo {top.Service.Name} ({top.Service.Price:N0}đ, {top.Service.DurationMinutes} phút) vì {top.Reason}.{alternative} Thợ cần kiểm tra trực tiếp tình trạng tóc trước khi chốt dịch vụ.");
+            $"Dựa trên câu hỏi của {customer.FullName}, bạn có thể tham khảo {top.Service.Name} ({top.Service.Price:N0}đ, {top.Service.DurationMinutes} phút) vì {top.Reason}.{alternative} Thợ cần kiểm tra trực tiếp tình trạng tóc trước khi chốt dịch vụ.", UsedFallback: true);
     }
 
     public async Task<AITextResult> GenerateMessageAsync(Customer customer, Appointment? appointment, MessageType type, CancellationToken cancellationToken = default)
@@ -81,12 +81,12 @@ public class AIService : IAIService
             MessageType.FollowUp => $"Salon xin hỏi thăm {customer.FullName}: mái tóc của bạn sau dịch vụ hiện thế nào ạ? Chúng tôi luôn sẵn sàng hỗ trợ.",
             _ => $"Salon rất mong được đón {customer.FullName} trở lại để chăm sóc mái tóc của bạn. Liên hệ chúng tôi để được tư vấn lịch phù hợp nhé!"
         };
-        return new AITextResult(true, message);
+        return new AITextResult(true, message, UsedFallback: true);
     }
 
     public async Task<AITextResult> SummarizeHistoryAsync(Customer customer, IReadOnlyCollection<ServiceHistory> history, CancellationToken cancellationToken = default)
     {
-        if (history.Count == 0) return new AITextResult(true, $"Khách {customer.FullName} chưa có lịch sử dịch vụ để tóm tắt.");
+        if (history.Count == 0) return new AITextResult(true, $"Khách {customer.FullName} chưa có lịch sử dịch vụ để tóm tắt.", UsedFallback: true);
         var prompt = ApplyTemplate(_prompts.Summary,
             ("customerName", customer.FullName),
             ("history", FormatHistory(history)));
@@ -96,7 +96,7 @@ public class AIService : IAIService
         var serviceNames = string.Join(", ", latest.Select(x => x.Service?.Name ?? "dịch vụ chưa xác định"));
         var notes = latest.Where(x => !string.IsNullOrWhiteSpace(x.Notes)).Select(x => x.Notes!.Trim()).ToList();
         var noteText = notes.Count == 0 ? "Chưa có ghi chú cụ thể trong các lần gần đây." : $"Ghi chú gần đây: {string.Join("; ", notes)}.";
-        return new AITextResult(true, $"Khách đã sử dụng gần đây: {serviceNames}. {noteText}");
+        return new AITextResult(true, $"Khách đã sử dụng gần đây: {serviceNames}. {noteText}", UsedFallback: true);
     }
 
     private async Task<string?> TryGenerateAsync(string prompt, CancellationToken cancellationToken)

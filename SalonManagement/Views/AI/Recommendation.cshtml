@@ -27,6 +27,8 @@
     }
     @if (!string.IsNullOrWhiteSpace(Model.Result))
     {
-        <hr /><h5>Nhận xét AI</h5><div class="ai-result" aria-live="polite">@Model.Result</div>
+        <hr /><h5>Nhận xét AI</h5>
+        @if (Model.UsedFallback) { <div class="alert alert-info small py-2">Nguồn kết quả: <strong>Local Fallback</strong>. Hệ thống đang dùng thuật toán nội bộ dựa trên dữ liệu CSDL; không gọi Gemini/OpenAI.</div> }
+        <div class="ai-result" aria-live="polite">@Model.Result</div>
     }
 </div>

@@ -53,7 +53,7 @@ public class AIController : Controller
                 }).ToList();
             var result = await _aiService.RecommendAsync(customer, history, activeServices, profile.ToPromptContext());
             if (!result.Succeeded) ModelState.AddModelError(string.Empty, result.Error!);
-            else { model.Result = result.Text; _context.AIRecommendations.Add(new AIRecommendation { CustomerId = customer.Id, InputText = model.InputText, Recommendation = result.Text }); await _context.SaveChangesAsync(); }
+            else { model.Result = result.Text; model.UsedFallback = result.UsedFallback; _context.AIRecommendations.Add(new AIRecommendation { CustomerId = customer.Id, InputText = model.InputText, Recommendation = result.Text }); await _context.SaveChangesAsync(); }
         }
         catch (Exception ex) { _logger.LogError(ex, "AI recommendation failed for customer {CustomerId}", model.CustomerId); ModelState.AddModelError(string.Empty, "AI hiện chưa sẵn sàng. Vui lòng thử lại sau."); }
         await PopulateCustomersAsync(model); return View(model);
@@ -63,7 +63,7 @@ public class AIController : Controller
         var model = new AIChatViewModel
         {
             CustomerId = customerId ?? 0,
-            Turns = GetChatTurns().Select(x => new AIChatTurnViewModel(x.Role, x.Text)).ToList()
+            Turns = GetChatTurns().Select(x => new AIChatTurnViewModel(x.Role, x.Text, x.UsedFallback)).ToList()
         };
         await PopulateCustomersAsync(model);
         return View(model);
@@ -74,7 +74,7 @@ public class AIController : Controller
         var turns = GetChatTurns();
         if (!ModelState.IsValid)
         {
-            model.Turns = turns.Select(x => new AIChatTurnViewModel(x.Role, x.Text)).ToList();
+            model.Turns = turns.Select(x => new AIChatTurnViewModel(x.Role, x.Text, x.UsedFallback)).ToList();
             await PopulateCustomersAsync(model);
             return View(model);
         }
@@ -82,7 +82,7 @@ public class AIController : Controller
         if (customer is null)
         {
             ModelState.AddModelError(nameof(model.CustomerId), "Không tìm thấy khách hàng.");
-            model.Turns = turns.Select(x => new AIChatTurnViewModel(x.Role, x.Text)).ToList();
+            model.Turns = turns.Select(x => new AIChatTurnViewModel(x.Role, x.Text, x.UsedFallback)).ToList();
             await PopulateCustomersAsync(model);
             return View(model);
         }
@@ -94,7 +94,7 @@ public class AIController : Controller
             else
             {
                 turns.Add(new AIConversationTurn("Nhân viên", model.Message));
-                turns.Add(new AIConversationTurn("AI", result.Text));
+                turns.Add(new AIConversationTurn("AI", result.Text, result.UsedFallback));
                 turns = turns.TakeLast(8).ToList();
                 SaveChatTurns(turns);
                 model.Message = string.Empty;
@@ -105,7 +105,7 @@ public class AIController : Controller
             _logger.LogError(ex, "AI chat failed for customer {CustomerId}", model.CustomerId);
             ModelState.AddModelError(string.Empty, "Không thể tư vấn AI lúc này. Vui lòng thử lại sau.");
         }
-        model.Turns = turns.Select(x => new AIChatTurnViewModel(x.Role, x.Text)).ToList();
+        model.Turns = turns.Select(x => new AIChatTurnViewModel(x.Role, x.Text, x.UsedFallback)).ToList();
         await PopulateCustomersAsync(model);
         return View(model);
     }
