@@ -21,21 +21,16 @@ public class AIService : IAIService
         _logger = logger;
     }
 
-    public Task<AITextResult> RecommendAsync(Customer customer, IReadOnlyCollection<ServiceHistory> history, IReadOnlyCollection<SalonService> services, string need, CancellationToken cancellationToken = default)
-        => RecommendAsync(customer, history, services, need, RecommendationPromptVersion.V3, cancellationToken);
-
-    public async Task<AITextResult> RecommendAsync(Customer customer, IReadOnlyCollection<ServiceHistory> history, IReadOnlyCollection<SalonService> services,
-        string need, RecommendationPromptVersion promptVersion, CancellationToken cancellationToken = default)
+    public async Task<AITextResult> RecommendAsync(Customer customer, IReadOnlyCollection<ServiceHistory> history, IReadOnlyCollection<SalonService> services, string need, CancellationToken cancellationToken = default)
     {
         var active = services.Where(x => x.Status).ToList();
         if (active.Count == 0) return new AITextResult(false, string.Empty, "Salon hiện chưa có dịch vụ đang cung cấp để gợi ý.");
-        var templates = GetRecommendationTemplates(promptVersion);
-        var prompt = ApplyTemplate(templates.User,
+        var prompt = ApplyTemplate(_prompts.Recommendation,
             ("customerName", customer.FullName),
             ("need", LimitText(need, 1000)),
             ("services", string.Join("; ", active.Select(x => $"{x.Name} ({x.Price:N0}đ, {x.DurationMinutes} phút)"))),
             ("history", FormatHistory(history)));
-        var remote = await TryGenerateAsync(prompt, templates.System, cancellationToken);
+        var remote = await TryGenerateAsync(prompt, cancellationToken);
         if (remote is not null) return new AITextResult(true, remote);
         var suggestions = SalonConsultationAdvisor.Build(active, history, new SalonConsultationProfile { CustomerNeed = need });
         var primary = suggestions.First();
@@ -104,25 +99,22 @@ public class AIService : IAIService
         return new AITextResult(true, $"Khách đã sử dụng gần đây: {serviceNames}. {noteText}", UsedFallback: true);
     }
 
-    private Task<string?> TryGenerateAsync(string prompt, CancellationToken cancellationToken)
-        => TryGenerateAsync(prompt, _prompts.System, cancellationToken);
-
-    private async Task<string?> TryGenerateAsync(string prompt, string systemPrompt, CancellationToken cancellationToken)
+    private async Task<string?> TryGenerateAsync(string prompt, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(_options.ApiKey) || string.IsNullOrWhiteSpace(_options.Model)) return null;
-        if (string.Equals(_options.Provider, "Gemini", StringComparison.OrdinalIgnoreCase)) return await TryGenerateWithGeminiAsync(systemPrompt, prompt, cancellationToken);
-        if (string.Equals(_options.Provider, "OpenAI", StringComparison.OrdinalIgnoreCase)) return await TryGenerateWithOpenAIAsync(systemPrompt, prompt, cancellationToken);
+        if (string.Equals(_options.Provider, "Gemini", StringComparison.OrdinalIgnoreCase)) return await TryGenerateWithGeminiAsync(prompt, cancellationToken);
+        if (string.Equals(_options.Provider, "OpenAI", StringComparison.OrdinalIgnoreCase)) return await TryGenerateWithOpenAIAsync(prompt, cancellationToken);
         return null;
     }
 
-    private async Task<string?> TryGenerateWithOpenAIAsync(string systemPrompt, string prompt, CancellationToken cancellationToken)
+    private async Task<string?> TryGenerateWithOpenAIAsync(string prompt, CancellationToken cancellationToken)
     {
         try
         {
             var client = _httpClientFactory.CreateClient();
             client.Timeout = TimeSpan.FromSeconds(20);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _options.ApiKey);
-            var payload = new { model = _options.Model, input = $"{systemPrompt}\n\n{prompt}" };
+            var payload = new { model = _options.Model, input = $"{_prompts.System}\n\n{prompt}" };
             using var response = await client.PostAsync(_options.Endpoint, new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json"), cancellationToken);
             response.EnsureSuccessStatusCode();
             using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync(cancellationToken));
@@ -136,7 +128,7 @@ public class AIService : IAIService
         return null;
     }
 
-    private async Task<string?> TryGenerateWithGeminiAsync(string systemPrompt, string prompt, CancellationToken cancellationToken)
+    private async Task<string?> TryGenerateWithGeminiAsync(string prompt, CancellationToken cancellationToken)
     {
         try
         {
@@ -146,7 +138,7 @@ public class AIService : IAIService
             var endpoint = $"{_options.GeminiEndpoint.TrimEnd('/')}/models/{Uri.EscapeDataString(_options.Model)}:generateContent";
             var payload = new
             {
-                contents = new[] { new { parts = new[] { new { text = $"{systemPrompt}\n\n{prompt}" } } } },
+                contents = new[] { new { parts = new[] { new { text = $"{_prompts.System}\n\n{prompt}" } } } },
                 generationConfig = new { temperature = 0.3, maxOutputTokens = 500 }
             };
             const int maximumAttempts = 3;
@@ -190,19 +182,6 @@ public class AIService : IAIService
 
     private static string FormatHistory(IEnumerable<ServiceHistory> history) => string.Join("; ", history.OrderByDescending(x => x.ServiceDate).Take(5).Select(x => $"{x.ServiceDate:dd/MM/yyyy}: {x.Service?.Name ?? "không rõ"}; ghi chú: {x.Notes ?? "không có"}"));
     private static string FormatConversation(IEnumerable<AIConversationTurn> conversation) => string.Join(" | ", conversation.TakeLast(6).Select(x => $"{x.Role}: {LimitText(x.Text, 300)}"));
-    private (string System, string User) GetRecommendationTemplates(RecommendationPromptVersion promptVersion)
-    {
-        var template = promptVersion switch
-        {
-            RecommendationPromptVersion.V1 => _prompts.RecommendationV1,
-            RecommendationPromptVersion.V2 => _prompts.RecommendationV2,
-            _ => null
-        };
-        return template is null
-            ? (_prompts.System, _prompts.Recommendation)
-            : (string.IsNullOrWhiteSpace(template.System) ? _prompts.System : template.System,
-                string.IsNullOrWhiteSpace(template.User) ? _prompts.Recommendation : template.User);
-    }
     private static string LimitText(string value, int maximum) => value.Length <= maximum ? value : value[..maximum];
     private static string ApplyTemplate(string template, params (string Name, string Value)[] values)
     {

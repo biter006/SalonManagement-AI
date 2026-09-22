@@ -112,7 +112,7 @@ Khi Gemini lỗi, hết quota hoặc không cấu hình key, hệ thống tự d
 dotnet test SalonManagement.Tests/SalonManagement.Tests.csproj
 ```
 
-18 test hiện có bao phủ: đặt lịch hợp lệ và tính giờ kết thúc, trùng lịch, ngoài ca, quá khứ, kiểm tra ca/thợ, tính hóa đơn và từ chối lịch chưa hoàn thành; AI mock cho phản hồi hợp lệ/rỗng/exception, retry Gemini khi HTTP 503, ba phiên bản prompt V1/V2/V3, tư vấn dịch vụ theo dữ liệu salon và trang quản lý người dùng hiển thị đúng vai trò. Test case AI thủ công nằm tại `docs/Test-cases-KT3-AI.md`; test case quản lý nằm tại `docs/Test-cases-KT2.md`.
+17 test hiện có bao phủ: đặt lịch hợp lệ và tính giờ kết thúc, trùng lịch, ngoài ca, quá khứ, kiểm tra ca/thợ, tính hóa đơn và từ chối lịch chưa hoàn thành; AI mock cho phản hồi hợp lệ/rỗng/exception, retry Gemini khi HTTP 503, tư vấn dịch vụ theo dữ liệu salon và trang quản lý người dùng hiển thị đúng vai trò. Test case AI thủ công nằm tại `docs/Test-cases-KT3-AI.md`; test case quản lý nằm tại `docs/Test-cases-KT2.md`.
 
 ## Demo flow
 

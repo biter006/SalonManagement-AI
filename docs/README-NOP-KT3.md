@@ -13,7 +13,7 @@ Thư mục nộp bài được tổ chức để người chấm có thể xem m
 ## Nội dung từng thư mục
 
 - `01-Tai-lieu`: hướng dẫn minh chứng, tối ưu prompt, review code bằng AI, test cases và README dự án.
-- `02-Anh-minh-chung`: ảnh chụp demo Gemini, xử lý fallback, ba vòng prompt, test tự động (18 test hiện có) và dữ liệu CSDL. Bảy ảnh không chứa thông tin liên hệ cũng được lưu tại `docs/minh-chung-kt3` trên GitHub.
+- `02-Anh-minh-chung`: ảnh chụp demo Gemini, xử lý fallback, ba vòng prompt, test 17/17 và dữ liệu CSDL. Bảy ảnh không chứa thông tin liên hệ cũng được lưu tại `docs/minh-chung-kt3` trên GitHub.
 - `03-Ma-nguon-minh-chung`: các tệp mã nguồn then chốt cho AI, prompt và test; chỉ là bản sao để đối chiếu, mã nguồn đầy đủ nằm trong repository GitHub.
 
 ## Lưu ý khi trình bày
