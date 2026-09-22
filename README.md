@@ -92,7 +92,7 @@ dotnet user-secrets set "AI:Model" "<your-model>" --project SalonManagement
 
 `AIService` là implementation của `IAIService`; controller không gọi API trực tiếp. Lỗi timeout, HTTP lỗi, JSON rỗng hoặc exception được log bằng `ILogger` và chuyển sang fallback / thông báo thân thiện. Gợi ý chỉ nhận danh sách `SalonService` đang tồn tại và đang cung cấp.
 
-Prompt được tách khỏi mã nguồn tại `SalonManagement/Prompts/SalonPrompts.json`, gồm System Prompt và các User Prompt cho gợi ý dịch vụ, tin nhắn, tóm tắt. Tài liệu KT3 gồm: `docs/KT3-Toi-uu-prompt.md`, `docs/KT3-Review-code-bang-AI.md`, `docs/Test-cases-KT3-AI.md` và `docs/KT3-Huong-dan-minh-chung-AI.md`.
+Prompt được tách khỏi mã nguồn tại `SalonManagement/Prompts/SalonPrompts.json`, gồm System Prompt và các User Prompt cho gợi ý dịch vụ, tin nhắn, tóm tắt. Tài liệu KT3 gồm: `docs/KT3-Toi-uu-prompt.md`, `docs/KT3-Review-code-bang-AI.md`, `docs/Test-cases-KT3-AI.md`, `docs/KT3-Huong-dan-minh-chung-AI.md` và ảnh minh chứng tại `docs/minh-chung-kt3`.
 
 ### Gemini API Free Tier
 
@@ -112,7 +112,7 @@ Khi Gemini lỗi, hết quota hoặc không cấu hình key, hệ thống tự d
 dotnet test SalonManagement.Tests/SalonManagement.Tests.csproj
 ```
 
-11 test hiện có bao phủ: đặt lịch hợp lệ và tính giờ kết thúc, trùng lịch, ngoài ca, quá khứ, kiểm tra ca/thợ, tính hóa đơn và từ chối lịch chưa hoàn thành, AI mock cho phản hồi hợp lệ/rỗng/exception, cùng trang quản lý người dùng hiển thị đúng vai trò. Danh sách test case kiểm thử thủ công nằm tại `docs/Test-cases-KT2.md`.
+17 test hiện có bao phủ: đặt lịch hợp lệ và tính giờ kết thúc, trùng lịch, ngoài ca, quá khứ, kiểm tra ca/thợ, tính hóa đơn và từ chối lịch chưa hoàn thành; AI mock cho phản hồi hợp lệ/rỗng/exception, retry Gemini khi HTTP 503, tư vấn dịch vụ theo dữ liệu salon và trang quản lý người dùng hiển thị đúng vai trò. Test case AI thủ công nằm tại `docs/Test-cases-KT3-AI.md`; test case quản lý nằm tại `docs/Test-cases-KT2.md`.
 
 ## Demo flow
 
