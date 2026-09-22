@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text;
+using System.Text.Json;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using SalonManagement.Models;
@@ -80,9 +81,35 @@ public class AIServiceTests
         Assert.Equal(2, handler.CallCount);
     }
 
+    [Fact]
+    public async Task RecommendationV1_UsesItsOwnSystemAndUserTemplate()
+    {
+        var handler = new RecordingHandler("""{"candidates":[{"content":{"parts":[{"text":"Gợi ý V1"}]}}]}""");
+        var service = new AIService(new TestHttpClientFactory(new HttpClient(handler)), Options.Create(new AIOptions
+        {
+            Provider = "Gemini", ApiKey = "test-gemini-key", Model = "gemini-test-model"
+        }), Options.Create(Prompts()), NullLogger<AIService>.Instance);
+
+        var result = await service.RecommendAsync(
+            new Customer { FullName = "Khách test", Phone = "0900000004" }, [],
+            [new SalonService { Name = "Cắt tóc", Price = 100000, DurationMinutes = 30, Status = true }],
+            "Nhu cầu V1", RecommendationPromptVersion.V1);
+
+        Assert.True(result.Succeeded);
+        Assert.NotNull(handler.RequestBody);
+        using var payload = JsonDocument.Parse(handler.RequestBody);
+        var prompt = payload.RootElement.GetProperty("contents")[0].GetProperty("parts")[0].GetProperty("text").GetString();
+        Assert.Contains("System V1", prompt);
+        Assert.Contains("V1 Khách test", prompt);
+        Assert.Contains("Nhu cầu V1", prompt);
+        Assert.DoesNotContain("System prompt", prompt);
+    }
+
     private static SalonPromptsOptions Prompts() => new()
     {
         System = "System prompt",
+        RecommendationV1 = new RecommendationPromptTemplate { System = "System V1", User = "V1 {{customerName}} {{need}}" },
+        RecommendationV2 = new RecommendationPromptTemplate { System = "System V2", User = "V2 {{customerName}} {{need}}" },
         Recommendation = "Khách: {{customerName}}; Nhu cầu: {{need}}; Dịch vụ: {{services}}; Lịch sử: {{history}}",
         Message = "Khách: {{customerName}}; Loại: {{messageType}}; Lịch: {{appointmentInfo}}",
         Chat = "Khách: {{customerName}}; Câu hỏi: {{message}}; Lịch sử: {{history}}; Dịch vụ: {{services}}; Hội thoại: {{conversation}}",
@@ -97,13 +124,15 @@ public class AIServiceTests
     private sealed class RecordingHandler(string response, HttpStatusCode statusCode = HttpStatusCode.OK) : HttpMessageHandler
     {
         public HttpRequestMessage? Request { get; private set; }
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        public string? RequestBody { get; private set; }
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             Request = request;
-            return Task.FromResult(new HttpResponseMessage(statusCode)
+            RequestBody = request.Content is null ? null : await request.Content.ReadAsStringAsync(cancellationToken);
+            return new HttpResponseMessage(statusCode)
             {
                 Content = new StringContent(response, Encoding.UTF8, "application/json")
-            });
+            };
         }
     }
 

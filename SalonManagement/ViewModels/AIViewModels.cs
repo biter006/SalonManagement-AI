@@ -1,11 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SalonManagement.Models;
+using SalonManagement.Services;
 
 namespace SalonManagement.ViewModels;
 
 public class AIRecommendationViewModel
 {
+    [Display(Name = "Phiên bản prompt KT3")]
+    public RecommendationPromptVersion PromptVersion { get; set; } = RecommendationPromptVersion.V3;
     [Display(Name = "Khách hàng")]
     [Range(1, int.MaxValue, ErrorMessage = "Vui lòng chọn khách hàng.")]
     public int CustomerId { get; set; }

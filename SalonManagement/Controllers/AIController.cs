@@ -51,7 +51,7 @@ public class AIController : Controller
                     DurationMinutes = x.Service.DurationMinutes,
                     Reason = x.Reason
                 }).ToList();
-            var result = await _aiService.RecommendAsync(customer, history, activeServices, profile.ToPromptContext());
+            var result = await _aiService.RecommendAsync(customer, history, activeServices, profile.ToPromptContext(), model.PromptVersion);
             if (!result.Succeeded) ModelState.AddModelError(string.Empty, result.Error!);
             else { model.Result = result.Text; model.UsedFallback = result.UsedFallback; _context.AIRecommendations.Add(new AIRecommendation { CustomerId = customer.Id, InputText = model.InputText, Recommendation = result.Text }); await _context.SaveChangesAsync(); }
         }
