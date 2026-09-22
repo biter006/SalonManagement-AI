@@ -1,0 +1,23 @@
+@model AIChatViewModel
+@{ ViewData["Title"] = "Chatbot tư vấn tóc"; }
+<div class="card form-card p-4">
+    <h1 class="page-title h3">Chatbot tư vấn tóc</h1>
+    <div class="alert alert-warning small">Chatbot hỗ trợ nhân viên tư vấn, không tự đặt lịch hoặc quyết định thay thợ. Kết quả cần được kiểm tra trước khi nói với khách.</div>
+    <form asp-action="Chat" class="row g-3 align-items-end">
+        <div asp-validation-summary="ModelOnly" class="text-danger col-12"></div>
+        <div class="col-md-4"><label asp-for="CustomerId" class="form-label"></label><select asp-for="CustomerId" asp-items="Model.Customers" class="form-select"><option value="">-- Chọn khách hàng --</option></select></div>
+        <div class="col-md-6"><label asp-for="Message" class="form-label"></label><input asp-for="Message" maxlength="600" class="form-control" placeholder="Ví dụ: Tóc khách khô, ngân sách 500k thì nên làm gì?" /></div>
+        <div class="col-md-2 d-grid"><button class="btn btn-primary">Gửi</button></div>
+    </form>
+    <div class="small text-muted mt-3">Gợi ý: “Khách muốn tóc gọn, ít chăm sóc thì chọn gì?” · “Dịch vụ nào phù hợp tóc khô?”</div>
+    <div class="mt-4">
+        @if (Model.Turns.Count == 0)
+        { <p class="text-muted mb-0">Chưa có hội thoại. Chọn khách hàng và nhập câu hỏi để bắt đầu.</p> }
+        @foreach (var turn in Model.Turns)
+        {
+            var isAi = turn.Role == "AI";
+            <div class="mb-3 @(isAi ? "me-4" : "ms-4 text-end")"><div class="d-inline-block text-start p-3 rounded @(isAi ? "bg-light border" : "bg-primary text-white")" style="max-width: 85%; white-space: pre-line;"><strong>@turn.Role</strong><br />@turn.Text</div></div>
+        }
+    </div>
+    <a class="btn btn-link px-0" asp-action="Index">Quay lại AI Assistant</a>
+</div>

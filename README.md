@@ -92,6 +92,20 @@ dotnet user-secrets set "AI:Model" "<your-model>" --project SalonManagement
 
 `AIService` là implementation của `IAIService`; controller không gọi API trực tiếp. Lỗi timeout, HTTP lỗi, JSON rỗng hoặc exception được log bằng `ILogger` và chuyển sang fallback / thông báo thân thiện. Gợi ý chỉ nhận danh sách `SalonService` đang tồn tại và đang cung cấp.
 
+Prompt được tách khỏi mã nguồn tại `SalonManagement/Prompts/SalonPrompts.json`, gồm System Prompt và các User Prompt cho gợi ý dịch vụ, tin nhắn, tóm tắt. Tài liệu KT3 gồm: `docs/KT3-Toi-uu-prompt.md`, `docs/KT3-Review-code-bang-AI.md`, `docs/Test-cases-KT3-AI.md` và `docs/KT3-Huong-dan-minh-chung-AI.md`.
+
+### Gemini API Free Tier
+
+`AIService` cũng hỗ trợ Gemini API. Tạo API Key trong Google AI Studio rồi đặt bằng User Secrets, không commit key vào GitHub:
+
+```powershell
+dotnet user-secrets set "AI:Provider" "Gemini" --project SalonManagement
+dotnet user-secrets set "AI:ApiKey" "GEMINI_API_KEY_CUA_BAN" --project SalonManagement
+dotnet user-secrets set "AI:Model" "gemini-2.5-flash" --project SalonManagement
+```
+
+Khi Gemini lỗi, hết quota hoặc không cấu hình key, hệ thống tự dùng Local Fallback để đảm bảo demo không bị gián đoạn.
+
 ## Chạy test
 
 ```powershell
