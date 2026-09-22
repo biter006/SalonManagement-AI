@@ -142,8 +142,14 @@ public class AIService : IAIService
                 generationConfig = new { temperature = 0.3, maxOutputTokens = 500 }
             };
             using var response = await client.PostAsync(endpoint, new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json"), cancellationToken);
-            response.EnsureSuccessStatusCode();
-            using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync(cancellationToken));
+            var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning("Gemini returned HTTP {StatusCode} for model {Model} at {Endpoint}. Detail: {Detail}",
+                    (int)response.StatusCode, _options.Model, endpoint, LimitText(responseBody, 1000));
+                return null;
+            }
+            using var document = JsonDocument.Parse(responseBody);
             var text = document.RootElement
                 .GetProperty("candidates")
                 .EnumerateArray()

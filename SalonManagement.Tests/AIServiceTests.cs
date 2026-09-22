@@ -45,6 +45,22 @@ public class AIServiceTests
         Assert.Contains("Dịch vụ đề xuất: Cắt tóc", result.Text);
     }
 
+    [Fact]
+    public async Task GeminiProvider_Http404_UsesLocalFallback()
+    {
+        var handler = new RecordingHandler("""{"error":{"message":"Model unavailable"}}""", HttpStatusCode.NotFound);
+        var service = new AIService(new TestHttpClientFactory(new HttpClient(handler)), Options.Create(new AIOptions
+        {
+            Provider = "Gemini", ApiKey = "test-gemini-key", Model = "missing-model"
+        }), Options.Create(Prompts()), NullLogger<AIService>.Instance);
+
+        var result = await service.RecommendAsync(new Customer { FullName = "Khách test", Phone = "0900000002" }, [], [new SalonService { Name = "Cắt tóc", Price = 100000, DurationMinutes = 30, Status = true }], "Muốn tóc gọn");
+
+        Assert.True(result.Succeeded);
+        Assert.True(result.UsedFallback);
+        Assert.Contains("Dịch vụ đề xuất: Cắt tóc", result.Text);
+    }
+
     private static SalonPromptsOptions Prompts() => new()
     {
         System = "System prompt",
@@ -59,13 +75,13 @@ public class AIServiceTests
         public HttpClient CreateClient(string name) => client;
     }
 
-    private sealed class RecordingHandler(string response) : HttpMessageHandler
+    private sealed class RecordingHandler(string response, HttpStatusCode statusCode = HttpStatusCode.OK) : HttpMessageHandler
     {
         public HttpRequestMessage? Request { get; private set; }
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             Request = request;
-            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            return Task.FromResult(new HttpResponseMessage(statusCode)
             {
                 Content = new StringContent(response, Encoding.UTF8, "application/json")
             });
