@@ -180,7 +180,7 @@ public class AIService : IAIService
         return null;
     }
 
-    private static string FormatHistory(IEnumerable<ServiceHistory> history) => string.Join("; ", history.OrderByDescending(x => x.ServiceDate).Take(5).Select(x => $"{x.ServiceDate:dd/MM/yyyy}: {x.Service?.Name ?? "không rõ"}; ghi chú: {x.Notes ?? "không có"}"));
+    private static string FormatHistory(IEnumerable<ServiceHistory> history) => string.Join("; ", history.OrderByDescending(x => x.ServiceDate).Take(5).Select(x => $"{x.ServiceDate:dd/MM/yyyy}: {x.Service?.Name ?? "không rõ"}; ghi chú: {LimitText(x.Notes ?? "không có", 300)}"));
     private static string FormatConversation(IEnumerable<AIConversationTurn> conversation) => string.Join(" | ", conversation.TakeLast(6).Select(x => $"{x.Role}: {LimitText(x.Text, 300)}"));
     private static string LimitText(string value, int maximum) => value.Length <= maximum ? value : value[..maximum];
     private static string ApplyTemplate(string template, params (string Name, string Value)[] values)

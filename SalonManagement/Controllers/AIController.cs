@@ -22,6 +22,7 @@ public class AIController : Controller
     public IActionResult Index() => View();
     public async Task<IActionResult> Recommendation(int? customerId)
     {
+        if (customerId.GetValueOrDefault() > 0 && !await CanAccessCustomerAsync(customerId!.Value)) return Forbid();
         var model = new AIRecommendationViewModel { CustomerId = customerId ?? 0 };
         await PopulateCustomersAsync(model); return View(model);
     }
@@ -31,6 +32,7 @@ public class AIController : Controller
         if (!ModelState.IsValid) { await PopulateCustomersAsync(model); return View(model); }
         var customer = await _context.Customers.FindAsync(model.CustomerId);
         if (customer is null) { ModelState.AddModelError(nameof(model.CustomerId), "Không tìm thấy khách hàng."); await PopulateCustomersAsync(model); return View(model); }
+        if (!await CanAccessCustomerAsync(customer.Id)) return Forbid();
         try
         {
             var history = await HistoryAsync(customer.Id);
@@ -60,10 +62,11 @@ public class AIController : Controller
     }
     public async Task<IActionResult> Chat(int? customerId)
     {
+        if (customerId.GetValueOrDefault() > 0 && !await CanAccessCustomerAsync(customerId!.Value)) return Forbid();
         var model = new AIChatViewModel
         {
             CustomerId = customerId ?? 0,
-            Turns = GetChatTurns().Select(x => new AIChatTurnViewModel(x.Role, x.Text, x.UsedFallback)).ToList()
+            Turns = GetChatTurns(customerId ?? 0).Select(x => new AIChatTurnViewModel(x.Role, x.Text, x.UsedFallback)).ToList()
         };
         await PopulateCustomersAsync(model);
         return View(model);
@@ -71,7 +74,7 @@ public class AIController : Controller
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Chat(AIChatViewModel model)
     {
-        var turns = GetChatTurns();
+        var turns = GetChatTurns(model.CustomerId);
         if (!ModelState.IsValid)
         {
             model.Turns = turns.Select(x => new AIChatTurnViewModel(x.Role, x.Text, x.UsedFallback)).ToList();
@@ -86,6 +89,7 @@ public class AIController : Controller
             await PopulateCustomersAsync(model);
             return View(model);
         }
+        if (!await CanAccessCustomerAsync(customer.Id)) return Forbid();
         try
         {
             var result = await _aiService.ChatAsync(customer, await HistoryAsync(customer.Id),
@@ -96,7 +100,7 @@ public class AIController : Controller
                 turns.Add(new AIConversationTurn("Nhân viên", model.Message));
                 turns.Add(new AIConversationTurn("AI", result.Text, result.UsedFallback));
                 turns = turns.TakeLast(8).ToList();
-                SaveChatTurns(turns);
+                SaveChatTurns(customer.Id, turns);
                 model.Message = string.Empty;
             }
         }
@@ -111,6 +115,7 @@ public class AIController : Controller
     }
     public async Task<IActionResult> Message(int? customerId, int? appointmentId)
     {
+        if (customerId.GetValueOrDefault() > 0 && !await CanAccessCustomerAsync(customerId!.Value)) return Forbid();
         var model = new AIMessageViewModel { CustomerId = customerId ?? 0, AppointmentId = appointmentId };
         await PopulateMessageOptionsAsync(model); return View(model);
     }
@@ -120,7 +125,17 @@ public class AIController : Controller
         if (!ModelState.IsValid) { await PopulateMessageOptionsAsync(model); return View(model); }
         var customer = await _context.Customers.FindAsync(model.CustomerId);
         if (customer is null) { ModelState.AddModelError(nameof(model.CustomerId), "Không tìm thấy khách hàng."); await PopulateMessageOptionsAsync(model); return View(model); }
-        var appointment = model.AppointmentId.HasValue ? await _context.Appointments.Include(x => x.Service).Include(x => x.Stylist).FirstOrDefaultAsync(x => x.Id == model.AppointmentId && x.CustomerId == model.CustomerId) : null;
+        if (!await CanAccessCustomerAsync(customer.Id)) return Forbid();
+        var appointmentQuery = RestrictAppointmentsToCurrentUser(_context.Appointments.Include(x => x.Service).Include(x => x.Stylist));
+        var appointment = model.AppointmentId.HasValue
+            ? await appointmentQuery.FirstOrDefaultAsync(x => x.Id == model.AppointmentId && x.CustomerId == model.CustomerId)
+            : null;
+        if (model.AppointmentId.HasValue && appointment is null)
+        {
+            ModelState.AddModelError(nameof(model.AppointmentId), "Bạn không có quyền sử dụng lịch hẹn này.");
+            await PopulateMessageOptionsAsync(model);
+            return View(model);
+        }
         try
         {
             var result = await _aiService.GenerateMessageAsync(customer, appointment, model.MessageType);
@@ -132,6 +147,7 @@ public class AIController : Controller
     }
     public async Task<IActionResult> Summary(int? customerId)
     {
+        if (customerId.GetValueOrDefault() > 0 && !await CanAccessCustomerAsync(customerId!.Value)) return Forbid();
         var model = new AISummaryViewModel { CustomerId = customerId ?? 0 };
         await PopulateCustomersAsync(model); return View(model);
     }
@@ -141,6 +157,7 @@ public class AIController : Controller
         if (!ModelState.IsValid) { await PopulateCustomersAsync(model); return View(model); }
         var customer = await _context.Customers.FindAsync(model.CustomerId);
         if (customer is null) { ModelState.AddModelError(nameof(model.CustomerId), "Không tìm thấy khách hàng."); await PopulateCustomersAsync(model); return View(model); }
+        if (!await CanAccessCustomerAsync(customer.Id)) return Forbid();
         try
         {
             var result = await _aiService.SummarizeHistoryAsync(customer, await HistoryAsync(customer.Id));
@@ -150,20 +167,64 @@ public class AIController : Controller
         await PopulateCustomersAsync(model); return View(model);
     }
     private async Task<List<ServiceHistory>> HistoryAsync(int customerId) => await _context.ServiceHistories.Include(x => x.Service).Include(x => x.Stylist).Where(x => x.CustomerId == customerId).OrderByDescending(x => x.ServiceDate).ToListAsync();
-    private async Task PopulateCustomersAsync(AIRecommendationViewModel model) => model.Customers = (await _context.Customers.OrderBy(x => x.FullName).ToListAsync()).Select(x => new SelectListItem(x.FullName, x.Id.ToString()));
-    private async Task PopulateCustomersAsync(AISummaryViewModel model) => model.Customers = (await _context.Customers.OrderBy(x => x.FullName).ToListAsync()).Select(x => new SelectListItem(x.FullName, x.Id.ToString()));
-    private async Task PopulateCustomersAsync(AIChatViewModel model) => model.Customers = (await _context.Customers.OrderBy(x => x.FullName).ToListAsync()).Select(x => new SelectListItem(x.FullName, x.Id.ToString()));
+
+    private System.Security.Claims.ClaimsPrincipal? CurrentUser => ControllerContext?.HttpContext?.User;
+
+    private bool IsStylistRestricted() => CurrentUser?.IsInRole("Stylist") == true
+        && CurrentUser.IsInRole("Admin") == false
+        && CurrentUser.IsInRole("Receptionist") == false;
+
+    private Task<bool> CanAccessCustomerAsync(int customerId)
+    {
+        if (!IsStylistRestricted()) return Task.FromResult(true);
+        var email = CurrentUser?.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(email)) return Task.FromResult(false);
+        return _context.Appointments.AnyAsync(x => x.CustomerId == customerId && x.Stylist!.Email == email);
+    }
+
+    private IQueryable<Appointment> RestrictAppointmentsToCurrentUser(IQueryable<Appointment> appointments)
+    {
+        if (!IsStylistRestricted()) return appointments;
+        var email = CurrentUser?.Identity?.Name;
+        return string.IsNullOrWhiteSpace(email)
+            ? appointments.Where(_ => false)
+            : appointments.Where(x => x.Stylist!.Email == email);
+    }
+
+    private async Task<IEnumerable<SelectListItem>> GetAccessibleCustomersAsync()
+    {
+        var customers = _context.Customers.AsNoTracking().AsQueryable();
+        if (IsStylistRestricted())
+        {
+            var email = CurrentUser?.Identity?.Name;
+            customers = string.IsNullOrWhiteSpace(email)
+                ? customers.Where(_ => false)
+                : customers.Where(x => _context.Appointments.Any(a => a.CustomerId == x.Id && a.Stylist!.Email == email));
+        }
+
+        return await customers.OrderBy(x => x.FullName)
+            .Select(x => new SelectListItem(x.FullName, x.Id.ToString()))
+            .ToListAsync();
+    }
+
+    private async Task PopulateCustomersAsync(AIRecommendationViewModel model) => model.Customers = await GetAccessibleCustomersAsync();
+    private async Task PopulateCustomersAsync(AISummaryViewModel model) => model.Customers = await GetAccessibleCustomersAsync();
+    private async Task PopulateCustomersAsync(AIChatViewModel model) => model.Customers = await GetAccessibleCustomersAsync();
     private async Task PopulateMessageOptionsAsync(AIMessageViewModel model)
     {
-        model.Customers = (await _context.Customers.OrderBy(x => x.FullName).ToListAsync()).Select(x => new SelectListItem(x.FullName, x.Id.ToString()));
-        model.Appointments = (await _context.Appointments.Include(x => x.Service).Where(x => !model.CustomerId.Equals(0) && x.CustomerId == model.CustomerId).OrderByDescending(x => x.AppointmentDate).ToListAsync()).Select(x => new SelectListItem($"{x.AppointmentDate:dd/MM/yyyy} - {x.Service!.Name}", x.Id.ToString()));
+        model.Customers = await GetAccessibleCustomersAsync();
+        var appointments = RestrictAppointmentsToCurrentUser(_context.Appointments.AsNoTracking().Include(x => x.Service))
+            .Where(x => model.CustomerId > 0 && x.CustomerId == model.CustomerId);
+        model.Appointments = (await appointments.OrderByDescending(x => x.AppointmentDate).ToListAsync())
+            .Select(x => new SelectListItem($"{x.AppointmentDate:dd/MM/yyyy} - {x.Service!.Name}", x.Id.ToString()));
     }
-    private List<AIConversationTurn> GetChatTurns()
+    private static string ChatSessionKeyFor(int customerId) => $"{ChatSessionKey}.{customerId}";
+    private List<AIConversationTurn> GetChatTurns(int customerId)
     {
-        var json = HttpContext.Session.GetString(ChatSessionKey);
+        var json = HttpContext.Session.GetString(ChatSessionKeyFor(customerId));
         if (string.IsNullOrWhiteSpace(json)) return [];
         try { return JsonSerializer.Deserialize<List<AIConversationTurn>>(json) ?? []; }
         catch (JsonException) { return []; }
     }
-    private void SaveChatTurns(List<AIConversationTurn> turns) => HttpContext.Session.SetString(ChatSessionKey, JsonSerializer.Serialize(turns));
+    private void SaveChatTurns(int customerId, List<AIConversationTurn> turns) => HttpContext.Session.SetString(ChatSessionKeyFor(customerId), JsonSerializer.Serialize(turns));
 }

@@ -12,11 +12,14 @@
 | AI-08 | Nhu cầu quá dài | Nhập trên 1.000 ký tự. | Form từ chối dữ liệu và hiển thị lỗi tiếng Việt. | Chờ kiểm thử |
 | AI-09 | Khách chưa có lịch sử | Chọn khách mới. | AI ghi rõ chưa đủ lịch sử, vẫn gợi ý theo nhu cầu. | Chờ kiểm thử |
 | AI-10 | Tin nhắn nhắc lịch thiếu lịch hẹn | Loại `Reminder`, không chọn lịch hẹn. | Không tạo tin nhắn; báo phải chọn lịch hẹn. | Chờ kiểm thử |
+| AI-11 | Phân quyền dữ liệu AI của thợ | Đăng nhập `Stylist`; chọn hoặc tự sửa URL sang khách không có lịch hẹn với thợ đó. | Danh sách chỉ có khách thuộc thợ; truy cập trực tiếp bị `403 Forbidden`; không gửi dữ liệu cho AI. | Đã có unit test |
 
 ## Unit test hiện có
 
 - AI trả kết quả hợp lệ và lưu gợi ý.
 - AI trả kết quả rỗng thì không lưu.
 - AI ném exception thì không làm thay đổi CSDL.
+- Stylist không thể gọi AI với khách không thuộc lịch hẹn của mình.
+- Danh sách khách trên AI của Stylist chỉ hiển thị khách thuộc thợ đó.
 
 Chạy: `dotnet test SalonManagement.Tests/SalonManagement.Tests.csproj`.
