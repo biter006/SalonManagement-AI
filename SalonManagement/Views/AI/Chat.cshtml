@@ -16,7 +16,7 @@
         @foreach (var turn in Model.Turns)
         {
             var isAi = turn.Role == "AI";
-            <div class="mb-3 @(isAi ? "me-4" : "ms-4 text-end")"><div class="d-inline-block text-start p-3 rounded @(isAi ? "bg-light border" : "bg-primary text-white")" style="max-width: 85%; white-space: pre-line;"><strong>@turn.Role</strong>@if (isAi && turn.UsedFallback) { <span class="badge text-bg-info ms-2">Local Fallback</span> }<br />@turn.Text</div></div>
+            <div class="mb-3 @(isAi ? "me-4" : "ms-4 text-end")"><div class="d-inline-block text-start p-3 rounded @(isAi ? "bg-light border" : "bg-primary text-white")" style="max-width: 85%; white-space: pre-line;"><strong>@turn.Role</strong>@if (isAi && turn.UsedFallback) { <span class="badge ms-2" style="background:#0d6efd;color:#fff;">Local Fallback</span> }<br />@turn.Text</div></div>
         }
     </div>
     <a class="btn btn-link px-0" asp-action="Index">Quay lại AI Assistant</a>
