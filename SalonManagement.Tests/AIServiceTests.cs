@@ -61,6 +61,25 @@ public class AIServiceTests
         Assert.Contains("Dịch vụ đề xuất: Cắt tóc", result.Text);
     }
 
+    [Fact]
+    public async Task GeminiProvider_Retries503_AndUsesLaterSuccessfulResponse()
+    {
+        var handler = new SequenceHandler(
+            (HttpStatusCode.ServiceUnavailable, """{"error":{"message":"Busy"}}"""),
+            (HttpStatusCode.OK, """{"candidates":[{"content":{"parts":[{"text":"Gemini phục hồi sau retry"}]}}]}"""));
+        var service = new AIService(new TestHttpClientFactory(new HttpClient(handler)), Options.Create(new AIOptions
+        {
+            Provider = "Gemini", ApiKey = "test-gemini-key", Model = "gemini-test-model"
+        }), Options.Create(Prompts()), NullLogger<AIService>.Instance);
+
+        var result = await service.RecommendAsync(new Customer { FullName = "Khách test", Phone = "0900000003" }, [], [new SalonService { Name = "Cắt tóc", Price = 100000, DurationMinutes = 30, Status = true }], "Muốn tóc gọn");
+
+        Assert.True(result.Succeeded);
+        Assert.False(result.UsedFallback);
+        Assert.Equal("Gemini phục hồi sau retry", result.Text);
+        Assert.Equal(2, handler.CallCount);
+    }
+
     private static SalonPromptsOptions Prompts() => new()
     {
         System = "System prompt",
@@ -84,6 +103,22 @@ public class AIServiceTests
             return Task.FromResult(new HttpResponseMessage(statusCode)
             {
                 Content = new StringContent(response, Encoding.UTF8, "application/json")
+            });
+        }
+    }
+
+    private sealed class SequenceHandler(params (HttpStatusCode StatusCode, string Body)[] responses) : HttpMessageHandler
+    {
+        private readonly Queue<(HttpStatusCode StatusCode, string Body)> _responses = new(responses);
+        public int CallCount { get; private set; }
+
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            CallCount++;
+            var next = _responses.Dequeue();
+            return Task.FromResult(new HttpResponseMessage(next.StatusCode)
+            {
+                Content = new StringContent(next.Body, Encoding.UTF8, "application/json")
             });
         }
     }

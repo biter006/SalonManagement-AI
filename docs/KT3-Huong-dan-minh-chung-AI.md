@@ -17,7 +17,7 @@ Project hỗ trợ Gemini cùng với OpenAI và Local Fallback. Tạo Gemini AP
 ```powershell
 dotnet user-secrets set "AI:Provider" "Gemini" --project SalonManagement
 dotnet user-secrets set "AI:ApiKey" "GEMINI_API_KEY_CUA_BAN" --project SalonManagement
-dotnet user-secrets set "AI:Model" "gemini-2.5-flash" --project SalonManagement
+dotnet user-secrets set "AI:Model" "gemini-3.1-flash-lite" --project SalonManagement
 ```
 
 Không đưa Gemini API Key vào GitHub. Free Tier có giới hạn lượt gọi; dùng Local Fallback khi hết quota hoặc khi demo không có mạng.

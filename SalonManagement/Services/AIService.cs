@@ -141,23 +141,37 @@ public class AIService : IAIService
                 contents = new[] { new { parts = new[] { new { text = $"{_prompts.System}\n\n{prompt}" } } } },
                 generationConfig = new { temperature = 0.3, maxOutputTokens = 500 }
             };
-            using var response = await client.PostAsync(endpoint, new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json"), cancellationToken);
-            var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
-            if (!response.IsSuccessStatusCode)
+            const int maximumAttempts = 3;
+            for (var attempt = 1; attempt <= maximumAttempts; attempt++)
             {
-                _logger.LogWarning("Gemini returned HTTP {StatusCode} for model {Model} at {Endpoint}. Detail: {Detail}",
-                    (int)response.StatusCode, _options.Model, endpoint, LimitText(responseBody, 1000));
+                using var response = await client.PostAsync(endpoint, new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json"), cancellationToken);
+                var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+                if (!response.IsSuccessStatusCode)
+                {
+                    var retryable = response.StatusCode is System.Net.HttpStatusCode.TooManyRequests or System.Net.HttpStatusCode.ServiceUnavailable;
+                    if (retryable && attempt < maximumAttempts)
+                    {
+                        var delay = TimeSpan.FromSeconds(attempt);
+                        _logger.LogWarning("Gemini returned HTTP {StatusCode} for model {Model}; retry {Attempt}/{MaximumAttempts} after {DelaySeconds}s.",
+                            (int)response.StatusCode, _options.Model, attempt, maximumAttempts, delay.TotalSeconds);
+                        await Task.Delay(delay, cancellationToken);
+                        continue;
+                    }
+                    _logger.LogWarning("Gemini returned HTTP {StatusCode} for model {Model} at {Endpoint}. Detail: {Detail}",
+                        (int)response.StatusCode, _options.Model, endpoint, LimitText(responseBody, 1000));
+                    return null;
+                }
+                using var document = JsonDocument.Parse(responseBody);
+                var text = document.RootElement
+                    .GetProperty("candidates")
+                    .EnumerateArray()
+                    .SelectMany(x => x.GetProperty("content").GetProperty("parts").EnumerateArray())
+                    .Select(x => x.TryGetProperty("text", out var value) ? value.GetString() : null)
+                    .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+                if (!string.IsNullOrWhiteSpace(text)) return text;
+                _logger.LogWarning("Gemini provider returned an empty response.");
                 return null;
             }
-            using var document = JsonDocument.Parse(responseBody);
-            var text = document.RootElement
-                .GetProperty("candidates")
-                .EnumerateArray()
-                .SelectMany(x => x.GetProperty("content").GetProperty("parts").EnumerateArray())
-                .Select(x => x.TryGetProperty("text", out var value) ? value.GetString() : null)
-                .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
-            if (!string.IsNullOrWhiteSpace(text)) return text;
-            _logger.LogWarning("Gemini provider returned an empty response.");
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or JsonException or KeyNotFoundException or InvalidOperationException)
         {

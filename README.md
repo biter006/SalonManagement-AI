@@ -101,7 +101,7 @@ Prompt được tách khỏi mã nguồn tại `SalonManagement/Prompts/SalonPro
 ```powershell
 dotnet user-secrets set "AI:Provider" "Gemini" --project SalonManagement
 dotnet user-secrets set "AI:ApiKey" "GEMINI_API_KEY_CUA_BAN" --project SalonManagement
-dotnet user-secrets set "AI:Model" "gemini-2.5-flash" --project SalonManagement
+dotnet user-secrets set "AI:Model" "gemini-3.1-flash-lite" --project SalonManagement
 ```
 
 Khi Gemini lỗi, hết quota hoặc không cấu hình key, hệ thống tự dùng Local Fallback để đảm bảo demo không bị gián đoạn.
